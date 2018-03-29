@@ -1,6 +1,7 @@
-'user strict';
+'use strict';
 // test lib for now, must change to actual lib
 const SerialPort = require('serialport/test');
+const io = require('socket.io')();
 
 // test port for now, must change to actual port
 const portPath = 'COM_TEST';
@@ -13,6 +14,20 @@ MockBinding.createPort(portPath, { echo: true, record: false });
 const serialPort = new SerialPort(portPath);
 serialPort.on('open', () => {
   console.log('Port opened:\t', serialPort.path);
+});
+
+// sets the socket connection to send responses from the serial port to the React display
+io.on('connection', client => {
+  // let the client start the test by sending a 'start' event
+  client.on('start', () => {
+    startTest();
+    // listen for data coming from the mock port and send it to the React display
+    serialPort.on('data', data => {
+      console.log('Received:\t', data.toString());
+      client.emit('test', data.toString());
+      // note: can add encoding as an arg to .toString
+    });
+  });
 });
 
 // writes data to the mock port; the port echoes data back and can be received by the server
@@ -28,15 +43,17 @@ const sendRandomNumbers = () => {
 };
 
 // wait 500ms for the port to open and then start the test
-setTimeout(() => {
-  console.log('Sending test data in 3s...');
-  setTimeout(sendRandomNumbers, 3000);
-}, 500);
-
-// listen for data coming from the mock port
-serialPort.on('data', data => {
-  console.log('Received:\t', data.toString());
-});
+const startTest = () => {
+  setTimeout(() => {
+    console.log('Sending test data in 3s...');
+    setTimeout(sendRandomNumbers, 3000);
+  }, 500);
+};
 
 // destroys the serial port; not sure if this is required
-MockBinding.reset();
+// MockBinding.reset();
+
+// open the socket and listen for the client
+const IOport = 8000;
+io.listen(IOport);
+console.log('Listening for React client on port', IOport);
