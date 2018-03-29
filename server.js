@@ -21,12 +21,12 @@ io.on('connection', client => {
   // let the client start the test by sending a 'start' event
   client.on('start', () => {
     startTest();
-    // listen for data coming from the mock port and send it to the React display
-    serialPort.on('data', data => {
-      console.log('Received:\t', data.toString());
-      client.emit('test', data.toString());
-      // note: can add encoding as an arg to .toString
-    });
+  });
+  // listen for data coming from the mock port and send it to the React display
+  serialPort.on('data', data => {
+    console.log('Received:\t', data.toString());
+    client.emit('test', data.toString());
+    // note: can add encoding as an arg to .toString
   });
 });
 
@@ -35,11 +35,11 @@ const sendRandomNumbers = () => {
   let x = 0;
   const intervalId = setInterval(() => {
     x++;
-    x > 500 ? clearInterval(intervalId) : null;
+    x > 50 ? clearInterval(intervalId) : null;
     const random = Math.floor(Math.random() * 10);
     const message = Buffer.from(`random number: ${random}`);
     serialPort.write(message, () => console.log('Wrote random number.'));
-  }, 10);
+  }, 100);
 };
 
 // wait 500ms for the port to open and then start the test

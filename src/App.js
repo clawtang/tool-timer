@@ -1,18 +1,23 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
+import { testSocket } from './api';
 
 class App extends Component {
+  state = {
+    random: 'waiting for random number'
+  };
+
+  onClick = () => {
+    testSocket(random => {
+      this.setState({ random });
+    });
+  };
+
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+      <div className="app">
+        <p className="app-intro">Test data: {this.state.random}</p>
+        <button onClick={this.onClick}>Start</button>
       </div>
     );
   }
