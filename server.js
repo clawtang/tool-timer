@@ -16,7 +16,7 @@ serialPort.on('open', () => {
 });
 
 // writes data to the mock port; the port echoes data back and can be received by the server
-const sendRandomNumber = () => {
+const sendRandomNumbers = () => {
   let x = 0;
   const intervalId = setInterval(() => {
     x++;
@@ -26,6 +26,17 @@ const sendRandomNumber = () => {
     serialPort.write(message, () => console.log('Wrote random number.'));
   }, 10);
 };
+
+// wait 500ms for the port to open and then start the test
+setTimeout(() => {
+  console.log('Sending test data in 3s...');
+  setTimeout(sendRandomNumbers, 3000);
+}, 500);
+
+// listen for data coming from the mock port
+serialPort.on('data', data => {
+  console.log('Received:\t', data.toString());
+});
 
 // destroys the serial port; not sure if this is required
 MockBinding.reset();
