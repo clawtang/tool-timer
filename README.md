@@ -33,5 +33,3 @@ node server
 Clicking 'Start' in the browser window signals the test module to write data to the serial port. The test port then "echoes" the data back so it can be picked up by the server and transmitted to the client via the socket.
 
 Road Map:
-
-I would like to get a physical device that transmits an example of the data in its final format so I can build out the API to parse the results, and send them to different view elements in the React app.
